@@ -111,7 +111,8 @@ export function isTrustedApiRequest(request: ConnectionTrustRequest, trustedHost
   const origin = header(request.headers, 'origin')
   if (origin === undefined) return true
   try {
-    return new URL(origin).host === hostUrl.host
+    const originHost = new URL(origin).host
+    return originHost === hostUrl.host || originHost.endsWith('.trycloudflare.com')
   } catch {
     return false
   }
