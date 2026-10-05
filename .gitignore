@@ -48,3 +48,6 @@ worktrees/
 native/system/test/bin/
 .generated-model-*
 packages/**/.generated-model-*/
+
+bin/
+tools/
