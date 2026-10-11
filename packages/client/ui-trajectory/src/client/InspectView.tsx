@@ -82,7 +82,10 @@ export function InspectView({
   )
   const evidence = useMemo(() => inspectionEvidence(window), [window])
   const failures = evidence.filter(item => item.failed)
-  const state = useSyncExternalStore(controller.store.subscribe, controller.store.getSnapshot)
+  const state = useSyncExternalStore(
+    listener => controller.store.subscribe(listener),
+    () => controller.store.getSnapshot(),
+  )
   const answer = useAnalysis(state.run)
   const diagnosis = useMemo(
     () => state.run === undefined ? null : parseInspectionDiagnosis(answer.text, state.run.evidence),

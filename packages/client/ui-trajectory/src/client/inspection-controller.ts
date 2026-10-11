@@ -61,7 +61,7 @@ export class InspectionController {
       const id = await this.ctx.sessions.create(cwd === undefined ? {} : { cwd })
       reference = this.ctx.sessions.retain(id, { source: 'inspection' })
       await reference.ready
-      if (this.disposed) return
+      if (this.isDisposed()) return
       const selected = await this.ctx.remote.session.selectModel({
         sessionId: id, provider: model.provider, model: model.model,
         ...model.reasoningEffort === undefined ? {} : { reasoningEffort: model.reasoningEffort },
@@ -74,12 +74,12 @@ export class InspectionController {
       ]
       const admitted = await reference.binding.session.prompt(content, 'queue')
       if (!admitted.ok) throw new Error(admitted.error.message)
-      if (this.disposed) return
+      if (this.isDisposed()) return
       previous?.reference.release()
       this.store.set({ phase: 'ready', run: { reference, evidence, model } })
       reference = undefined
     } catch (error) {
-      if (this.disposed) return
+      if (this.isDisposed()) return
       this.store.set({
         phase: 'error',
         ...previous === undefined ? {} : { run: previous },
@@ -95,5 +95,10 @@ export class InspectionController {
     if (this.disposed) return
     this.disposed = true
     this.store.getSnapshot().run?.reference.release()
+  }
+
+  /** Read disposal state after an awaited Session operation. */
+  private isDisposed(): boolean {
+    return this.disposed
   }
 }

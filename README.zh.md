@@ -2,101 +2,48 @@
 
 [English](README.md) | 中文
 
-iVeman Studio 是基于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的 MIT 许可分支。DeepSeek Harness 是由 [DeepSeek AI](https://deepseek.com) 开发的开源 agent harness（智能体框架）。
+[![CI](https://github.com/iveman99/iveman_harness_master_powered_by_Deepseek/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/iveman99/iveman_harness_master_powered_by_Deepseek/actions/workflows/ci.yml) [![许可证：MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-其中的 HarnessLens 标签页可以使用任意已配置的模型检查记录的智能体会话，包括通过 Gemini API 使用的 Gemma 4。它将带编号的会话证据和可选截图发送到单独的分析会话，并展示引用事件的诊断、建议修复方法和验证步骤。被检查会话的选定模型和历史保持不变。
+**基于插件的 AI 智能体工作台，内置会话检查功能。**
 
-它构建于**一切皆插件**的架构之上，由 [Cordis](https://github.com/cordiverse/cordis) 驱动，其设计参见论文 [_A Programming Paradigm for Spatiotemporal Composability_](https://arxiv.org/abs/2608.25512)。
+iVeman Studio 是基于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的 MIT 许可社区分支，构建于 [Cordis](https://github.com/cordiverse/cordis) 之上。
 
-文档：[https://deepseek-harness.github.io/deepseek-harness/](https://deepseek-harness.github.io/deepseek-harness/)
+## HarnessLens
 
-## 试用 HarnessLens
+直接在对话中检查已记录的智能体会话。选择任意已配置的模型，包括通过 Google AI Studio 使用 Gemma 4，即可获得带证据引用的诊断、建议修复方法和验证步骤。
 
-从源码启动 Web 应用，打开一个会话，然后选择对话旁的 **Inspect**。在 **Settings → Models** 中配置提供方，在 HarnessLens 中选择模型，再选择 **Analyze**。配置 Google AI Studio 提供方的 API 密钥后，可以使用 Gemma 4。分析使用当前已加载的近期事件，因此请先打开包含已完成轮次的会话。确切的证据范围和限制见 [Trajectory 包说明](packages/client/ui-trajectory/README.zh.md)。
+- 检查过程不会更改原会话所选的模型和历史记录。
+- 使用近期已加载事件作为编号证据；截图为可选项。
+- 分析在单独的会话中进行，并引用来源事件 ID。
 
-## 开发者预览
+在 Web 应用中打开一个已完成的会话，选择对话旁的 **Inspect**，选取已配置的模型，然后按 **Analyze**。证据范围和限制见 [Trajectory 包指南](packages/client/ui-trajectory/README.zh.md)。
 
-DeepSeek Harness 处于 _开发者预览_ 阶段，正在快速迭代。**未来将出现破坏兼容性的变更。**
-
-运行本项目前，请阅读[安全说明](SAFETY.zh.md)。
+## 运行 iVeman Studio
 
 <a id="run"></a>
 
-## 运行
-
-### 通过 `npm` 运行
-
-安装 `Node.js`，然后运行：
-
-```sh
-npx @deepseek-ai/dsh web
-```
-
-该命令默认会在 `http://127.0.0.1:3080` 启动 Web UI，本机启动时还会用默认浏览器打开页面。通过 SSH 启动时只打印宿主机 URL，因为本地转发地址由 SSH 客户端或编辑器持有。传入 `--no-open` 可仅运行服务器而不打开浏览器。详见 [Web UI 指南](docs/user/guide/index.zh.md)。
+要求：Node.js `^22.19` 或 `>=24`，以及 pnpm `11.7`。
 
 <a id="run-from-source"></a>
 
-### 从源码运行
-
-如需从仓库源码运行：
-
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
+git clone https://github.com/iveman99/iveman_harness_master_powered_by_Deepseek.git
+cd iveman_harness_master_powered_by_Deepseek
 pnpm install
 pnpm run build
 pnpm dsh web
 ```
 
-`pnpm run build` 会准备仓库产物。`pnpm dsh web` 会直接使用这些已构建产物，不会重新构建。
+Web 应用会在 `http://127.0.0.1:3080` 打开。使用 HarnessLens 前，请在 **Settings → Models** 中配置模型提供方。运行项目前请阅读[安全说明](SAFETY.zh.md)。
 
-## 社区与支持
+## 基于 DeepSeek Harness 构建
 
-- 通过 [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions) 提交反馈或 bug 报告。
-- 为你的插件仓库添加 [`dsh-plugin`](https://github.com/topics/dsh-plugin) 话题，便于被发现。
-- 欢迎加入 DeepSeek Harness 企微群！扫描下方二维码填写入群问卷，小助手会定期发送入群邀请。
-
-<table>
-  <thead>
-    <tr>
-      <th align="center">入群问卷</th>
-      <th align="center">微信公众号</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td align="center"><a href="https://trtgsjkv6r.feishu.cn/share/base/form/shrcnIt5twSVdLGD52KJBckGCgg"><img src="https://cdn.deepseek.com/harness/readme/community-wecom-survey.png" alt="DeepSeek Harness 入群问卷二维码" width="180" height="180"></a></td>
-      <td align="center"><img src="https://cdn.deepseek.com/harness/readme/community-wechat-official-account.png" alt="DeepSeek Harness 团队微信公众号二维码" width="180" height="180"></td>
-    </tr>
-  </tbody>
-</table>
+DeepSeek Harness 是由 [DeepSeek AI](https://deepseek.com) 开发的开源智能体框架。iVeman Studio 保留其插件架构，并新增了对话内检查流程。阅读[项目文档](https://deepseek-harness.github.io/deepseek-harness/)以了解底层框架。
 
 ## 参与贡献
 
-参见 [CONTRIBUTING.md](CONTRIBUTING.zh.md)。
-
-## 开发
-
-请先阅读[开发指南](docs/development.zh.md)与[架构文档](docs/architecture.zh.md)。
-
-`pnpm run dev:web` 会在一个终端里完成构建、启动，并在源码修改时重建 client bundle；`make help` 列出 Web 与 Desktop 对应的 Make target。完整表格见开发指南的「应用命令」一节。
-
-面向 agent：请遵循 [AGENTS.md](AGENTS.md)。
-
-## 引用
-
-```bibtex
-@misc{deepseek-harness2026,
-  title={DeepSeek Harness: Everything is a Plugin},
-  author={DeepSeek-AI},
-  year={2026},
-  publisher={GitHub},
-  howpublished={\url{https://github.com/deepseek-ai/deepseek-harness}},
-}
-```
+请参阅 [CONTRIBUTING.zh.md](CONTRIBUTING.zh.md) 和[架构指南](docs/architecture.zh.md)。开发命令见 [docs/development.zh.md](docs/development.zh.md)。
 
 ## 许可证
 
-[MIT](LICENSE)
-
-第三方依赖及其许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+本项目采用 [MIT 许可证](LICENSE)。第三方依赖许可证列于 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

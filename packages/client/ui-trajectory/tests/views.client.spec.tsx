@@ -295,6 +295,7 @@ async function bench(snapshot = historySnapshot(NODES)) {
   // The locale plugin backs the locale-aware view tab label ('locale' in
   // inject); its settings scope needs a connection handle.
   ctx.provide('connection', { api: { settings: {} }, isLoopback: false } as never)
+  ctx.provide('remote.session', {} as never)
   ctx.provide('configForms', { developerTools: { enabled: createSnapshotStore(true) }, get: () => stubConfigForm().scope } as never)
   await runtime.mount(localePlugin)
   const provide = vi.spyOn(ctx.uiSession, 'provide')
@@ -431,6 +432,7 @@ describe('plugin registration', () => {
     expect(tabsOf(b.slots)).toEqual([
       { id: 'chat', label: 'Chat' },
       { id: 'trajectory', label: 'Trajectory' },
+      { id: 'inspect', label: 'HarnessLens' },
     ])
   })
 
@@ -509,11 +511,11 @@ describe('plugin registration', () => {
 })
 
 describe('tab switching in ConversationRoot', () => {
-  it('renders two tabs, defaults to chat, and switches to the trajectory ledger', async () => {
+  it('renders the conversation tabs, defaults to chat, and switches to the trajectory ledger', async () => {
     const b = await bench()
     const view = mount(b)
     expect(screen.getByTestId('chat-body')).toBeTruthy()
-    expect(screen.getAllByRole('tab').map(t => t.textContent)).toEqual(['Chat', 'Trajectory'])
+    expect(screen.getAllByRole('tab').map(t => t.textContent)).toEqual(['Chat', 'Trajectory', 'HarnessLens'])
 
     fireEvent.click(screen.getByRole('tab', { name: 'Trajectory' }))
     expect(screen.queryByText(/turns ·/)).toBeNull()
