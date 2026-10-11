@@ -1,12 +1,18 @@
-# DeepSeek Harness
+# iVeman Studio
 
 English | [中文](README.zh.md)
 
-DeepSeek Harness (`dsh`) is an open-source agent harness developed by [DeepSeek AI](https://deepseek.com).
+iVeman Studio is an MIT-licensed fork of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness), an open-source agent harness developed by [DeepSeek AI](https://deepseek.com).
+
+Its HarnessLens tab lets you inspect a recorded agent Session with any configured model, including Gemma 4 through the Gemini API. It sends numbered Session evidence and an optional screenshot to a separate analysis Session, then shows a diagnosis with event citations, a suggested fix, and a verification step. The inspected Session keeps its selected model and history.
 
 It is built on an **everything-is-a-plugin** architecture and powered by [Cordis](https://github.com/cordiverse/cordis), whose design is described in [_A Programming Paradigm for Spatiotemporal Composability_](https://arxiv.org/abs/2608.25512).
 
 Documentation: [https://deepseek-harness.github.io/deepseek-harness/](https://deepseek-harness.github.io/deepseek-harness/)
+
+## Try HarnessLens
+
+Start the Web app from source, open a Session, and select **Inspect** beside the conversation. Configure a provider in **Settings → Models**, choose its model in HarnessLens, then select **Analyze**. Gemma 4 is available through the Google AI Studio provider when its API key is configured. The analysis uses recent loaded events, so open a Session with a completed turn first. See the [Trajectory package reference](packages/client/ui-trajectory/README.md) for the exact evidence and limits.
 
 ## Developer preview
 

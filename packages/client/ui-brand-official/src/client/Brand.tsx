@@ -1,4 +1,12 @@
 import type { SidebarBrandMarkOwnerProps } from '@deepseek-ai/dsh-client-ui-sidebar/client'
+import type { HeroBrandMarkOwnerProps } from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type { BrandKey } from './locales.ts'
+
+/** Translation function for the visible iVeman sidebar brand name. */
+export interface OfficialBrandNameProps {
+  /** Translates a brand dictionary entry. */
+  t: (key: BrandKey) => string
+}
 
 /**
  * Render the iVeman logo badge.
@@ -56,8 +64,8 @@ export function OfficialBrandMark({ size }: SidebarBrandMarkOwnerProps) {
 /**
  * Render the hero brand mark.
  */
-export function HeroBrandMark({ size, className }: { size?: number; className?: string }) {
-  return <IVemanLogo size={size || 34} className={className} />
+export function HeroBrandMark({ size, className }: HeroBrandMarkOwnerProps) {
+  return <IVemanLogo size={size || 34} {...className === undefined ? {} : { className }} />
 }
 
 const DEEPSEEK_WHALE_PATH =
@@ -67,7 +75,7 @@ const DEEPSEEK_WHALE_PATH =
  * Render the official name artwork with iVeman branding and DeepSeek Harness attribution.
  * @returns the iVeman brand name.
  */
-export function OfficialBrandName() {
+export function OfficialBrandName({ t }: OfficialBrandNameProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', userSelect: 'none', lineHeight: 1.1 }}>
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
@@ -80,7 +88,7 @@ export function OfficialBrandName() {
             fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           }}
         >
-          iVeman
+          {t('name')}
         </span>
         <span
           className="iveman-badge"
@@ -96,7 +104,7 @@ export function OfficialBrandName() {
             boxShadow: '0 1px 4px rgba(79, 70, 229, 0.3)',
           }}
         >
-          HARNESS
+          {t('badge')}
         </span>
       </div>
       <div
@@ -111,7 +119,7 @@ export function OfficialBrandName() {
           whiteSpace: 'nowrap',
         }}
       >
-        <span>Built on</span>
+        <span>{t('attribution')}</span>
         <svg
           width="11"
           height="11"
@@ -121,7 +129,7 @@ export function OfficialBrandName() {
         >
           <path d={DEEPSEEK_WHALE_PATH} />
         </svg>
-        <span style={{ fontWeight: 600 }}>DeepSeek Harness</span>
+        <span style={{ fontWeight: 600 }}>{t('upstream')}</span>
       </div>
     </div>
   )

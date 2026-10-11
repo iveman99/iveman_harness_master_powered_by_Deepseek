@@ -1,5 +1,5 @@
 ---
-description: "Trajectory view for the dsh web client: a turn-aware event ledger with an interactive timing overview, registered into the conversation view ring."
+description: "Trajectory event ledger and HarnessLens diagnosis tabs for the dsh web client."
 kind: "package-reference"
 ---
 
@@ -9,7 +9,7 @@ English | [中文](README.zh.md)
 
 ## Summary
 
-The Trajectory tab lets you inspect agent activity as a turn-aware ledger and interactive timing overview. It groups User, Assistant, Tool, nested Subtool, and compaction records, marks turn and step boundaries, and opens a record inspector for token usage, duration, input, output, timing, images, and attachment summaries. Long histories open at the current tail, load older pages on demand, and render only visible rows. During streaming, the view follows the tail until you scroll upward, and in-flight records show a start marker without inventing elapsed time.
+The Trajectory tab shows a turn-aware event ledger and timing overview with recorded inputs, outputs, images, and failures. HarnessLens adds an Inspect tab that selects recent Session evidence and asks a configured model to diagnose it, optionally with a screenshot. It displays the suggested cause, cited event numbers, fix, and verification steps. Analysis runs in a separate recorded Session; its model choice leaves the original Session and the default for new Sessions unchanged.
 
 ## Table of Contents
 
@@ -26,6 +26,10 @@ The Trajectory tab lets you inspect agent activity as a turn-aware ledger and in
 ## Use this package
 
 Open the Trajectory tab in the conversation's view ring to inspect agent activity as an event ledger and timeline. The ledger covers records with an explicit loading row until the initial tail is positioned; while an older prefix remains unloaded, a first-row control loads one earlier page on click and shows the shared ongoing loader while that page is pending.
+
+### Diagnosing a run
+
+Open HarnessLens beside Chat and Trajectory in a Session with recorded activity. It shows up to 60 recent relevant events from the loaded Session window, including tool calls, results, model routes, user-authored and assistant messages, and turn endings. Tool events can open their record in Trajectory. Choose any available analysis model, optionally attach a PNG, JPEG, or WebP screenshot under 4 MB, and select **Analyze evidence**. The model request and image are recorded in a separate Session. The answer appears in HarnessLens; only citations to submitted event numbers are accepted. The view redacts common credential assignments from event excerpts, but inspect sensitive runs before sending them to a provider. A diagnosis suggests a fix and checks; it does not edit files or assert that a rerun passed.
 
 ### Inspecting records
 
@@ -86,17 +90,26 @@ These pages cover the conversation host and the session data this view projects.
 <a id="model-experience"></a>
 ## Model Experience
 
-None, as the package is a browser-side UI plugin layer that registers nothing model-facing.
+### HarnessLens analysis request
+
+#### What the model sees
+
+HarnessLens submits a separate Session prompt with up to 60 numbered excerpts from the loaded source Session window and an optional screenshot. The excerpts include `user/message`, `assistant/message`, `request/context`, tool calls and results, and turn endings. The prompt instructs the model to treat them as untrusted evidence, cite only supplied event numbers, avoid tools and edits, and state uncertainty. The source Session's model-visible history is unchanged.
+
+#### Token effect
+
+The analysis request adds one bounded prompt of at most 18,000 characters, plus any selected image, to its separate Session. The selected provider determines the image and output token costs.
 
 #### KV Cache effect
 
-None; this package neither assembles nor sends a provider request.
+The analysis request uses a new Session, so it does not reuse the source Session's provider cache. Cache behavior within that analysis Session depends on the selected provider.
 
 ## Known Limitations and Deferred Work
 
 <a id="known-limitations-and-deferred-work"></a>
 
 - **Tool-change presentation** — Tool-only developer messages name a single added or removed tool inline without expansion. Multiple changes show added/removed counts and expand to comma-separated tool lists, one line per change kind. Mixed content uses the generic context presentation.
+- **Inspect window** — HarnessLens uses the currently loaded event window and up to 60 recent relevant events, dropping older excerpts when needed to keep the prompt within 18,000 characters. It does not page older history for analysis, and its common-pattern redaction is not a comprehensive secret scanner.
 
 
 These limits define what the view can show while work is in flight; they are current package constraints.

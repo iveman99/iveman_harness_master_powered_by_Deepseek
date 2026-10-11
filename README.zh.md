@@ -1,12 +1,18 @@
-# DeepSeek Harness
+# iVeman Studio
 
 [English](README.md) | 中文
 
-DeepSeek Harness（`dsh`）是由 [DeepSeek AI](https://deepseek.com) 开发的开源 agent harness（智能体框架）。
+iVeman Studio 是基于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的 MIT 许可分支。DeepSeek Harness 是由 [DeepSeek AI](https://deepseek.com) 开发的开源 agent harness（智能体框架）。
+
+其中的 HarnessLens 标签页可以使用任意已配置的模型检查记录的智能体会话，包括通过 Gemini API 使用的 Gemma 4。它将带编号的会话证据和可选截图发送到单独的分析会话，并展示引用事件的诊断、建议修复方法和验证步骤。被检查会话的选定模型和历史保持不变。
 
 它构建于**一切皆插件**的架构之上，由 [Cordis](https://github.com/cordiverse/cordis) 驱动，其设计参见论文 [_A Programming Paradigm for Spatiotemporal Composability_](https://arxiv.org/abs/2608.25512)。
 
 文档：[https://deepseek-harness.github.io/deepseek-harness/](https://deepseek-harness.github.io/deepseek-harness/)
+
+## 试用 HarnessLens
+
+从源码启动 Web 应用，打开一个会话，然后选择对话旁的 **Inspect**。在 **Settings → Models** 中配置提供方，在 HarnessLens 中选择模型，再选择 **Analyze**。配置 Google AI Studio 提供方的 API 密钥后，可以使用 Gemma 4。分析使用当前已加载的近期事件，因此请先打开包含已完成轮次的会话。确切的证据范围和限制见 [Trajectory 包说明](packages/client/ui-trajectory/README.zh.md)。
 
 ## 开发者预览
 

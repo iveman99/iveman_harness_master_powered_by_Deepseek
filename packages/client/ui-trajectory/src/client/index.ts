@@ -5,6 +5,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { ImageAttachmentRef } from '@deepseek-ai/dsh-attachment'
 import type { SessionBinding } from '@deepseek-ai/dsh-api-session-controller/client'
+import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import type { ObservableSnapshot } from '@deepseek-ai/dsh-client-store'
 import type { SessionId } from '@deepseek-ai/dsh-session/types'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
@@ -16,6 +17,8 @@ import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import type {} from '@deepseek-ai/dsh-client-ui-session/client'
 import { createTrajectoryDurationStore } from './duration-store.ts'
 import { createTrajectoryStringWrappingStore } from './string-wrapping-store.ts'
+import { InspectView, type InspectViewInjected } from './InspectView.tsx'
+import { InspectionController } from './inspection-controller.ts'
 import { en, NS, zh } from './locales.ts'
 import { registerTrajectoryAssistantDefinition } from './trajectory-assistant-definition.ts'
 import { registerTrajectoryCompactionDefinitions } from './trajectory-compaction-definition.ts'
@@ -37,8 +40,8 @@ export type {
   UseTrajectory,
 } from './trajectory-contract.ts'
 
-/** Required services: the conversation slot, registries, ordinary Session paging, and the locale service. */
-export const inject = ['slots', 'sessions', 'uiSession', 'uiConversation', 'locale']
+/** Required services: the conversation slot, Sessions, model directory Remote, and locale service. */
+export const inject = ['slots', 'sessions', 'uiSession', 'uiConversation', 'locale', 'remote', 'remote.session']
 
 /**
  * Client plugin body: register the trajectory view tab. The registration
@@ -47,6 +50,19 @@ export const inject = ['slots', 'sessions', 'uiSession', 'uiConversation', 'loca
  */
 export function apply(ctx: Context): void {
   const trajectorySources = new WeakMap<SessionBinding, ObservableSnapshot<TrajectorySnapshot>>()
+  const inspectionControllers = new WeakMap<SessionBinding, InspectionController>()
+  const inspectionController = (binding: SessionBinding): InspectionController => {
+    let controller = inspectionControllers.get(binding)
+    if (controller === undefined) {
+      controller = new InspectionController(ctx, binding.sessionId)
+      inspectionControllers.set(binding, controller)
+      binding.ctx.effect(() => () => {
+        controller?.dispose()
+        inspectionControllers.delete(binding)
+      }, 'ui-trajectory: inspection Session')
+    }
+    return controller
+  }
   const trajectorySource = (binding: SessionBinding): ObservableSnapshot<TrajectorySnapshot> => {
     let source = trajectorySources.get(binding)
     if (source === undefined) {
@@ -110,4 +126,21 @@ export function apply(ctx: Context): void {
       }
     },
   }, TrajectoryView))
+  ctx.slots.inject('conversation.view', () => ctx.slots.register({
+    name: 'conversation.view',
+    id: 'inspect',
+    order: 20,
+    locale: NS,
+    label: () => t('view.inspect'),
+    inject: (sessionId: SessionId): InspectViewInjected => {
+      const binding = ctx.sessions.binding(sessionId)
+      if (binding === undefined) throw new Error(`ui-trajectory: session "${sessionId}" is unavailable`)
+      return {
+        sessionId,
+        source: binding.eventSource,
+        controller: inspectionController(binding),
+        loadCatalog: () => ctx.remote.session.modelCatalog(),
+      }
+    },
+  }, InspectView))
 }

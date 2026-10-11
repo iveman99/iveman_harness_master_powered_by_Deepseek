@@ -669,6 +669,12 @@ describe('Web session model selection', () => {
       { provider: 'deepseek-official', model: 'deepseek-reasoner', reasoningEffort: 'max' },
     ])
 
+    expectValue(await remote.selectModel(request({
+      sessionId, provider: 'deepseek-official', model: 'deepseek-chat', sessionOnly: true,
+    })))
+    expect(currentSelection(ctx, sessionId)).toMatchObject({ provider: 'deepseek-official', model: 'deepseek-chat' })
+    expect(saved).toHaveLength(1)
+
     // A refused selection never becomes anyone's default.
     await remote.selectModel(request({ sessionId, provider: 'missing', model: 'model' }))
     expect(saved).toHaveLength(1)

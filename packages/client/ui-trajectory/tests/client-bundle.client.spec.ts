@@ -66,7 +66,7 @@ describe('tsdown client artifact', () => {
     expect(handoff.id).toBe(PLUGIN_ID)
     expect(exports.apply).toBeTypeOf('function')
     expect(exports.inject).toEqual([
-      'slots', 'sessions', 'uiSession', 'uiConversation', 'locale',
+      'slots', 'sessions', 'uiSession', 'uiConversation', 'locale', 'remote', 'remote.session',
     ])
   })
 
@@ -89,13 +89,14 @@ describe('tsdown client artifact', () => {
     const uiConversation = new UiConversation(ctx, sessions as never)
     const { events, views } = uiConversation
     ctx.provide('connection', { api: { settings: {} }, isLoopback: false } as never)
-    ctx.provide('remote', { $on: () => () => {} } as never)
+    ctx.provide('remote', { $on: () => () => {}, session: {} } as never)
+    ctx.provide('remote.session', {} as never)
     ctx.provide('configForms', { developerTools: { enabled: createSnapshotStore(true) }, get: () => stubConfigForm().scope } as never)
     const locale = await import('@deepseek-ai/dsh-client-locale/client')
     ctx.plugin({ inject: [...locale.inject], apply: locale.apply })
     const fiber = ctx.plugin(exports as { apply: (ctx: Context) => void })
     await fiber.await()
-    expect(slots.entries('conversation.view').map(e => e.options.id)).toEqual(['trajectory'])
+    expect(slots.entries('conversation.view').map(e => e.options.id)).toEqual(['trajectory', 'inspect'])
     expect(events.entries().length).toBeGreaterThan(0)
     expect(views.entries()).toHaveLength(1)
     await fiber.dispose()
